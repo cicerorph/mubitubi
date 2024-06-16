@@ -24,10 +24,7 @@
               <input type="hidden" name="videoId" value="<%= video.value.id %>">
               <button type="submit" class="btn btn-success">Verify</button>
             </form>
-            <form action="/dashboard/delete" method="POST">
-              <input type="hidden" name="videoId" value="<%= video.value.id %>">
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
+            <button class="btn btn-danger delete-video" data-video-id="<%= video.value.id %>">Delete</button>
           </td>
         </tr>
       <% }) %>
@@ -38,7 +35,7 @@
 
   <div>
     <h3>Delete Video by ID</h3>
-    <form action="/dashboard/deleteById" method="POST">
+    <form id="deleteByIdForm" action="/dashboard/delete/" method="POST">
       <div class="form-group">
         <label for="videoId">Video ID:</label>
         <input type="text" id="videoId" name="videoId" class="form-control" required>
@@ -47,5 +44,55 @@
     </form>
   </div>
 </div>
+
+<script>
+  document.addEventListener('click', async function(event) {
+    if (event.target.classList.contains('delete-video')) {
+      const videoId = event.target.getAttribute('data-video-id');
+      const confirmDelete = confirm('Are you sure you want to delete this video?');
+      
+      if (confirmDelete) {
+        try {
+          const response = await fetch(`/dashboard/delete/${videoId}`, {
+            method: 'DELETE',
+          });
+
+          if (response.ok) {
+            alert('Video deleted successfully');
+            event.target.closest('tr').remove();
+          } else {
+            alert('Error deleting video');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error deleting video');
+        }
+      }
+    }
+  });
+
+  document.getElementById('deleteByIdForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const videoId = document.getElementById('videoId').value;
+    const confirmDelete = confirm('Are you sure you want to delete the video with ID ' + videoId + '?');
+    
+    if (confirmDelete) {
+      try {
+        const response = await fetch(`/dashboard/delete/${videoId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          alert('Video deleted successfully');
+        } else {
+          alert('Error deleting video');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error deleting video');
+      }
+    }
+  });
+</script>
 
 <%- include('partials/footer') %>
