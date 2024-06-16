@@ -11,3 +11,7 @@ files/videos/*
 
 # Remove .env for security
 .env
+
+# Packages
+package-lock.json
+node_modules/

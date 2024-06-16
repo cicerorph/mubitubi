@@ -1,13 +1,13 @@
 const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
 const session = require('express-session');
-const Josh = require('@joshdb/core');
-const provider = require("@joshdb/json");
 const { ensureAuthenticated } = require('../utils/util');
+const Josh = require("@joshdb/core");
+const provider = require("@joshdb/json");
 
 module.exports = (app) => {
   const db = new Josh({
-    name: 'auth',
+    name: 'mtauth',
     provider
   });
 

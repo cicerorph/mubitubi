@@ -4,6 +4,13 @@ const sanitizeHtml = require('sanitize-html');
 const db = require('../utils/db');
 const { ensureAuthenticated } = require('../utils/util');
 const { uuid } = require('uuidv4');
+const BunnyStorage = require('bunnycdn-storage').default;
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+
+// Initialize BunnyStorage
+const bunnyStorage = new BunnyStorage(process.env.BUNNY_API_KEY, process.env.BUNNY_STORAGE_ZONE);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -44,38 +51,70 @@ module.exports = (app) => {
         if (!title || !description) return res.status(400).send("No Description Or Title");
 
         const videoPath = req.file.path;
-        const thumbnailPath = 'files/thumbnails/' + req.file.filename + '.png';
+        const videoFilename = path.basename(videoPath);
+        const thumbnailFilename = videoFilename + '.png';
+        const thumbnailPath = path.join('files/thumbnails', thumbnailFilename);
 
-        ffmpeg(videoPath)
-            .screenshots({
-                count: 1,
-                folder: 'files/thumbnails',
-                filename: req.file.filename + '.png',
-                size: '1920x1080'
-            })
-            .on('end', async () => {
-                try {
-                    const videoDetails = {
-                        id: videoId,
-                        uploader: req.user,
-                        url: `${process.env.BASE_URL}/video/${videoId}`,
-                        video: `${process.env.BASE_URL}/files/videos/${req.file.filename}`,
-                        thumbnail: `${process.env.BASE_URL}/files/thumbnails/${req.file.filename}.png`,
-                        title,
-                        description,
-                        uploadedAt: Date.now(),
-                        verified: false
-                    };
+        try {
+            // Upload video to Bunny.net
+            await bunnyStorage.upload(videoPath, videoFilename);
 
-                    await db.set(videoId, videoDetails);
+            // Download the video back from Bunny.net to generate the thumbnail
+            const videoUrl = `https://${process.env.BUNNY_STORAGE_ZONE}.b-cdn.net/${videoFilename}`;
+            const localVideoPath = path.join('files/videos', videoFilename);
 
-                    res.status(200).send({ videoId });
-                } catch (error) {
-                    res.status(500).send('Error saving video details to the database.');
-                }
-            })
-            .on('error', (err) => {
-                res.status(500).send('Error generating thumbnail.');
+            const response = await axios({
+                url: videoUrl,
+                method: 'GET',
+                responseType: 'stream'
             });
+
+            const writer = fs.createWriteStream(localVideoPath);
+            response.data.pipe(writer);
+
+            writer.on('finish', () => {
+                // Generate thumbnail
+                ffmpeg(localVideoPath)
+                    .screenshots({
+                        count: 1,
+                        folder: 'files/thumbnails',
+                        filename: thumbnailFilename,
+                        size: '1920x1080'
+                    })
+                    .on('end', async () => {
+                        try {
+                            // Upload thumbnail to Bunny.net
+                            await bunnyStorage.upload(thumbnailPath, thumbnailFilename);
+
+                            const videoDetails = {
+                                id: videoId,
+                                uploader: req.user,
+                                url: `${process.env.BASE_URL}/video/${videoId}`,
+                                video: videoUrl,
+                                thumbnail: `https://${process.env.BUNNY_STORAGE_ZONE}.b-cdn.net/${thumbnailFilename}`,
+                                title,
+                                description,
+                                uploadedAt: Date.now(),
+                                verified: false
+                            };
+
+                            await db.set(videoId, videoDetails);
+
+                            res.status(200).send({ videoId });
+                        } catch (error) {
+                            res.status(500).send('Error uploading thumbnail to Bunny.net.');
+                        }
+                    })
+                    .on('error', (err) => {
+                        res.status(500).send('Error generating thumbnail.');
+                    });
+            });
+
+            writer.on('error', (err) => {
+                res.status(500).send('Error downloading video from Bunny.net.');
+            });
+        } catch (error) {
+            res.status(500).send('Error uploading video to Bunny.net.');
+        }
     });
 };

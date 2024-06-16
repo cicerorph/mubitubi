@@ -12,6 +12,7 @@
     "@joshdb/core": "^1.2.7",
     "@joshdb/json": "^1.0.5",
     "axios": "^1.7.2",
+    "bunnycdn-storage": "^1.1.0",
     "cors": "^2.8.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
