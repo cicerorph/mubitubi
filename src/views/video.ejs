@@ -10,7 +10,14 @@
         <div class="card-body">
             <h2 class="card-title"><%= video.title %></h2>
             <p class="card-text"><%= video.description %></p>
-            <p><%= video.uploadedAt %> </p>
+            <% const timestamp = video.uploadedAt; %>
+<% const date = new Date(timestamp); %>
+
+            <% const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' }; %>
+            <% const formattedDate = date.toLocaleDateString('en-US', options); %>
+
+            <p><%= formattedDate %></p>
+
             <hr>
             <div class="media mt-4">
                 <p class="card-text">Uploader:</p>
