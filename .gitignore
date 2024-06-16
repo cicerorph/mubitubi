@@ -1,0 +1,13 @@
+# Ignore everything in the data directory
+data/
+
+# Ignore all files in files/thumbnails, but not the directory itself
+files/thumbnails/*
+!files/thumbnails/.gitignore
+
+# Ignore all files in files/videos, but not the directory itself
+files/videos/*
+!files/videos/.gitignore
+
+# Remove .env for security
+.env
