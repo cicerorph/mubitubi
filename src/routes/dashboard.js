@@ -1,5 +1,8 @@
 const db = require('../utils/db')
+const BunnyStorage = require('bunnycdn-storage').default;
 const { ensureAuthenticated } = require("../utils/util");
+
+const bunnyStorage = new BunnyStorage(process.env.BUNNY_API_KEY, process.env.BUNNY_STORAGE_ZONE);
 
 module.exports = (app) => {
     app.get('/dashboard', ensureAuthenticated, async (req, res) => {
