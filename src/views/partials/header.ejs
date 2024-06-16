@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mTubi | <%= title %></title>
-    <% let videoTest = null %>
-    <% videoTest = video %>
-    <% if (videoTest) {%>
+    <% if (title.includes("Video")) {%>
        <meta content="MubiTubi - <%= video.title %> - Uploaded by: <%= video.uploader.global_name %> (<%= video.uploader.username %>)" property="og:title">
        <meta property="og:type" content="video.movie">
        <meta content="Uploaded by: <%= video.uploader.global_name %> (<%= video.uploader.username %>). Description: <%= video.description %>" property="og:description">
