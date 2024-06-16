@@ -83,6 +83,7 @@ module.exports = (app) => {
             res.status(200).send('Video deleted successfully');
         } catch (error) {
             res.status(500).send('Error deleting video');
+            console.log(error)
         }
     });
 }
