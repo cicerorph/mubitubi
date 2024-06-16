@@ -9,9 +9,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@joshdb/core": "^3.0.0-next.9a411bd.0",
+    "@joshdb/core": "^1.2.7",
     "@joshdb/json": "^1.0.5",
-    "@joshdb/mongo": "^3.0.0-next.218f2dc.0",
     "axios": "^1.7.2",
     "bunnycdn-storage": "^1.1.0",
     "cors": "^2.8.5",
