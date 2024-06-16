@@ -70,7 +70,7 @@ module.exports = (app) => {
                 return res.status(404).send('Video not found');
             }
 
-            const videoSplit = video.video.split("https://mubitubi.b-cdn.net/")
+            const videoSplit = videoDetails.video.split("https://mubitubi.b-cdn.net/")
 // https://mubitubi.b-cdn.net/e56c80d9-c610-4d5a-997e-8868bab5f5fc-gwombler.mp4
 
             // Delete video and thumbnail from Bunny.net
