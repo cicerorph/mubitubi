@@ -117,36 +117,4 @@ module.exports = (app) => {
             res.status(500).send('Error uploading video to Bunny.net.');
         }
     });
-
-    app.delete('/delete/:videoId', ensureAuthenticated, async (req, res) => {
-        const videoId = req.params.videoId;
-
-        try {
-            // Check if the user is a staff member
-            if (!req.user.isStaff) {
-                return res.status(403).send('Unauthorized. Only staff members can delete videos.');
-            }
-
-            // Get video details from the database
-            const videoDetails = await db.get(videoId);
-
-            if (!videoDetails) {
-                return res.status(404).send('Video not found');
-            }
-
-            const videoSplit = video.video.split("https://mubitubi.b-cdn.net/")
-// https://mubitubi.b-cdn.net/e56c80d9-c610-4d5a-997e-8868bab5f5fc-gwombler.mp4
-
-            // Delete video and thumbnail from Bunny.net
-            await bunnyStorage.delete(videoSplit[1]);
-            await bunnyStorage.delete(videoSplit[1] + ".png");
-
-            // Delete video entry from the database
-            await db.delete(videoId);
-
-            res.status(200).send('Video deleted successfully');
-        } catch (error) {
-            res.status(500).send('Error deleting video');
-        }
-    });
 };
