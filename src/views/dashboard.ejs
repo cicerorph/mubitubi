@@ -3,14 +3,14 @@
 <div class="container">
   <h2 class="mt-5">Dashboard</h2>
   <p>Welcome, <%= user.global_name %>! Here are the videos that need verification:</p>
-  
+
   <table class="table table-striped mt-3">
     <thead>
       <tr>
         <th>Title</th>
         <th>URL</th>
         <th>Submitted By</th>
-        <th>Action</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -24,11 +24,28 @@
               <input type="hidden" name="videoId" value="<%= video.value.id %>">
               <button type="submit" class="btn btn-success">Verify</button>
             </form>
+            <form action="/dashboard/delete" method="POST">
+              <input type="hidden" name="videoId" value="<%= video.value.id %>">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
           </td>
         </tr>
       <% }) %>
     </tbody>
   </table>
+
+  <hr>
+
+  <div>
+    <h3>Delete Video by ID</h3>
+    <form action="/dashboard/deleteById" method="POST">
+      <div class="form-group">
+        <label for="videoId">Video ID:</label>
+        <input type="text" id="videoId" name="videoId" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+  </div>
 </div>
 
 <%- include('partials/footer') %>
