@@ -30,6 +30,5 @@ app.use((req, res, next) => {
 });
 
 app.listen(port, () => {
-    db.init()
     console.log(`[SERVER] Server is running on http://localhost:${port}`);
 });
