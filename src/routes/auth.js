@@ -17,7 +17,7 @@ module.exports = (app) => {
 
   passport.deserializeUser(async (userId, done) => {
     try {
-      const user = await db.get(userId); // Retrieve user from joshdb by userId
+      const user = await db.get(userId);
       done(null, user);
     } catch (err) {
       done(err, null);
@@ -32,10 +32,10 @@ module.exports = (app) => {
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      let user = await db.get(profile.id); // Find user by Discord userId
+      let user = await db.get(profile.id);
       if (!user) {
         user = {
-          userId: profile.id, // Use profile.id as userId
+          userId: profile.id,
           username: profile.username,
           global_name: profile.global_name,
           discriminator: profile.discriminator,
@@ -86,7 +86,7 @@ module.exports = (app) => {
     }
 
     try {
-      const user = await db.get(userId); // Find user by Discord userId
+      const user = await db.get(userId); 
       if (!user) {
         return res.status(404).send('User not found.');
       }
