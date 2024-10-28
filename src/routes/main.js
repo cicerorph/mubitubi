@@ -12,6 +12,7 @@ module.exports = (app, express) => {
             
             for (const key of keys) {
                 const video = await db.get(key);
+                if (!video) continue;
                 videos.push(video);
             }
 
