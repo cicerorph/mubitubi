@@ -73,7 +73,9 @@ module.exports = (app) => {
         try {
             // Upload video to S3
             const videoUpload = await uploadToS3(videoPath, `videos/${videoFilename}`);
-            const videoUrl = videoUpload.Location;
+            const videoUrl = process.env.AWS_CLOUDFRONT_URL && process.env.AWS_CLOUDFRONT_URL !== ""
+                ? `${process.env.AWS_CLOUDFRONT_URL}/videos/${videoFilename}`
+                : videoUpload.Location;
 
             // Generate thumbnail
             await new Promise((resolve, reject) => {
@@ -90,7 +92,9 @@ module.exports = (app) => {
 
             // Upload thumbnail to S3
             const thumbnailUpload = await uploadToS3(thumbnailPath, `thumbnails/${thumbnailFilename}`);
-            const thumbnailUrl = thumbnailUpload.Location;
+            const thumbnailUrl = process.env.AWS_CLOUDFRONT_URL && process.env.AWS_CLOUDFRONT_URL !== ""
+                ? `${process.env.AWS_CLOUDFRONT_URL}/thumbnails/${thumbnailFilename}`
+                : thumbnailUpload.Location;
 
             const videoDetails = {
                 id: videoId,
