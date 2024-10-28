@@ -15,7 +15,7 @@ cd mubitubi
 3. Create your environment variables:
    - Copy `.env.template` to a new file named `.env`
    ```bash
-   mv .env.template .env
+   cp .env.template .env
    ```
    - Open `.env` and update the variables with your configuration
 
