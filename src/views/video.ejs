@@ -1,7 +1,7 @@
 <%- include('partials/header', { title: "Video", video: video }) %>
 
 <div class="container">
-    <video id="player" class="rounded-video" controls>
+    <video id="player" class="responsive-video" controls>
         <source src="<%= video.video %>" type="video/mp4">
         Your browser does not support the video tag.
     </video>
@@ -11,13 +11,10 @@
             <h2 class="card-title"><%= video.title %></h2>
             <p class="card-text"><%= video.description %></p>
             <% const timestamp = video.uploadedAt; %>
-<% const date = new Date(timestamp); %>
-
+            <% const date = new Date(timestamp); %>
             <% const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' }; %>
             <% const formattedDate = date.toLocaleDateString('en-US', options); %>
-
             <p><%= formattedDate %></p>
-
             <hr>
             <div class="media mt-4">
                 <p class="card-text">Uploader:</p>
@@ -35,5 +32,17 @@
 <style>
     .rounded-video {
         border-radius: 15px;
+    }
+
+    .responsive-video {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 0;
+        }
     }
 </style>
