@@ -78,7 +78,7 @@ module.exports = (app) => {
     });
   });
 
-  app.get('/auth/makeStaff', ensureAuthenticated, async (req, res) => {
+  /*app.get('/auth/makeStaff', ensureAuthenticated, async (req, res) => {
     const { userId } = req.query;
 
     if (!userId) {
@@ -98,5 +98,5 @@ module.exports = (app) => {
     } catch (error) {
       res.status(500).send('Error promoting user to staff.');
     }
-  });
+  });*/
 };
