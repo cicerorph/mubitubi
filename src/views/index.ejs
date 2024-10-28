@@ -1,34 +1,48 @@
-<%- include('partials/header', { title: "Home" }) %>
+<html>
+<head>
+  <%- include('partials/head', { title: "Home" }); %>
+</head>
+<body>
+    <%- include('partials/header', { user: user }); %>
 
-<div class="container">
-    <h1 class="mt-5">Welcome to MubiTubi</h1>
-    <p class="lead">This is the home page.</p>
+    <main class="main-content">
+      <h1 class="section-title">Welcome to MubiTubi</h1>
 
-    <div class="row">
-        <% if (videos.length > 0) { %>
-            <% let hasVerifiedVideos = false; %>
-            <% videos.forEach(function(video) { %>
-                <% if (video.verified) { %>
-                    <% hasVerifiedVideos = true; %>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="<%= video.thumbnail %>" class="card-img-top" alt="<%= video.title %>">
-                            <div class="card-body">
-                                <h5 class="card-title"><%= video.title %></h5>
-                                <p class="card-text text-muted">Uploader: <%= video.uploader.global_name %></p>
-                                <a href="/video/<%= video.id %>" class="btn btn-primary">Watch</a>
-                            </div>
-                        </div>
-                    </div>
-                <% } %>
-            <% }); %>
-            <% if (!hasVerifiedVideos) { %>
-                <p class="text-muted">No videos available... Maybe you can upload one!</p>
+      <% if (videos.length > 0) { %>
+        <% let hasVerifiedVideos = false; %>
+        <div class="video-grid">
+          <% videos.forEach(function(video) { %>
+            <% if (video.verified) { %>
+              <% hasVerifiedVideos = true; %>
+              <article class="video-card">
+                <img src="<%= video.thumbnail %>" alt="<%= video.title %>" class="thumbnail">
+                <div class="video-info">
+                  <h3 class="video-title"><%= video.title %></h3>
+                  <div class="video-meta">
+                    <svg style="width:20px;height:20px" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+                    </svg>
+                    <span><%= video.uploader.global_name %></span>
+                  </div>
+                  <a href="/video/<%= video.id %>" class="watch-btn">Watch</a>
+                </div>
+              </article>
             <% } %>
-        <% } else { %>
-            <p class="text-muted">No videos available... Maybe you can upload one!</p>
-        <% } %>
-    </div>
-</div>
-
-<%- include('partials/footer') %>
+          <% }); %>
+          <% if (!hasVerifiedVideos) { %>
+            <p class="text-alt">No videos available... Maybe you can upload one!</p>
+          <% } %>
+        </div>
+      <% } else { %>
+        <p class="text-alt">No videos available... Maybe you can upload one!</p>
+      <% } %>
+    </main>
+  
+    <script>
+      const cards = document.querySelectorAll('.video-card');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+      });
+    </script>
+</body>
+</html>

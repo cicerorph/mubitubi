@@ -1,0 +1,48 @@
+<%- include('partials/header', { title: "Video", video: video }) %>
+
+<div class="container">
+    <video id="player" class="responsive-video" controls>
+        <source src="<%= video.video %>" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="card mt-5">
+        <div class="card-body">
+            <h2 class="card-title"><%= video.title %></h2>
+            <p class="card-text"><%= video.description %></p>
+            <% const timestamp = video.uploadedAt; %>
+            <% const date = new Date(timestamp); %>
+            <% const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' }; %>
+            <% const formattedDate = date.toLocaleDateString('en-US', options); %>
+            <p><%= formattedDate %></p>
+            <hr>
+            <div class="media mt-4">
+                <p class="card-text">Uploader:</p>
+                <div class="media-body">
+                    <img src="https://cdn.discordapp.com/avatars/<%= video.uploader.userId %>/<%= video.uploader.avatar %>.png?size=4096" class="mr-3 rounded-circle" alt="Creator's avatar" style="width: 64px; height: 64px;">
+                    <p class="mt-0"><%= video.uploader.global_name %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<style>
+    .rounded-video {
+        border-radius: 15px;
+    }
+
+    .responsive-video {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 0;
+        }
+    }
+</style>

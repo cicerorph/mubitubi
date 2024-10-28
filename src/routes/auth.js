@@ -4,6 +4,7 @@ const session = require('express-session');
 const Josh = require('@joshdb/core');
 const provider = require("@joshdb/json");
 const { ensureAuthenticated } = require('../utils/util');
+const MongoStore = require("connect-mongo");
 
 module.exports = (app) => {
   const db = new Josh({
@@ -52,11 +53,17 @@ module.exports = (app) => {
     }
   }));
 
-  app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true
-  }));
+  app.use(
+    session({
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,
+        ttl: 14 * 24 * 60 * 60, // = 14 days. Default
+      }),
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
 
   app.use(passport.initialize());
   app.use(passport.session());

@@ -1,98 +1,121 @@
-<%- include('partials/header', { title: "Dashboard" }) %>
+<html>
+<head>
+  <%- include('partials/head', { title: "Dashboard" }); %>
+</head>
+<body>
+    <%- include('partials/header', { user: user }); %>
 
-<div class="container">
-  <h2 class="mt-5">Dashboard</h2>
-  <p>Welcome, <%= user.global_name %>! Here are the videos that need verification:</p>
+    <main>
+        <div class="header">
+            <h1>Staff Dashboard</h1>
+            <p>Welcome, <%= user.global_name %>! Here are the videos that need verification:</p>
+        </div>
 
-  <table class="table table-striped mt-3">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>URL</th>
-        <th>Submitted By</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% videos.forEach(video => { %>
-        <tr>
-          <td><%= video.value.title %></td>
-          <td><a href="<%= video.value.url %>" target="_blank"><%= video.value.url %></a></td>
-          <td><%= video.value.uploader.global_name %></td>
-          <td>
-            <form action="/dashboard/verify" method="POST">
-              <input type="hidden" name="videoId" value="<%= video.value.id %>">
-              <button type="submit" class="btn btn-success">Verify</button>
+        <div class="content-section">
+            <form class="delete-form" id="deleteByIdForm" onsubmit="handleDeleteById(event)">
+                <input type="text" class="input-field" id="videoId" placeholder="Enter Video ID" required>
+                <button type="submit" class="btn-alt btn-delete">Delete Video by ID</button>
             </form>
-            <button class="btn btn-danger delete-video" data-video-id="<%= video.value.id %>">Delete</button>
-          </td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
+        </div>
 
-  <hr>
+        <div class="content-section">
+            <table class="reports-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>URL</th>
+                        <th>Submitted By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% videos.forEach(video => { %>
+                        <tr data-video-id="<%= video.value.id %>">
+                            <td><%= video.value.title %></td>
+                            <td><a href="<%= video.value.url %>" target="_blank"><%= video.value.url %></a></td>
+                            <td><%= video.value.uploader.global_name %></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-alt btn-accept" onclick="handleAction('<%= video.value.id %>', 'verify')">Verify</button>
+                                    <button class="btn-alt btn-deny delete-video" data-video-id="<%= video.value.id %>">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+        async function handleDeleteById(event) {
+            event.preventDefault();
+            const videoId = document.getElementById('videoId').value;
+            const confirmDelete = confirm('Are you sure you want to delete the video with ID ' + videoId + '?');
+            
+            if (confirmDelete) {
+                try {
+                    const response = await fetch(`/dashboard/delete/${videoId}`, {
+                        method: 'DELETE',
+                    });
 
-  <div>
-    <h3>Delete Video by ID</h3>
-    <form id="deleteByIdForm" action="/dashboard/delete/" method="POST">
-      <div class="form-group">
-        <label for="videoId">Video ID:</label>
-        <input type="text" id="videoId" name="videoId" class="form-control" required>
-      </div>
-      <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
-  </div>
-</div>
-
-<script>
-  document.addEventListener('click', async function(event) {
-    if (event.target.classList.contains('delete-video')) {
-      const videoId = event.target.getAttribute('data-video-id');
-      const confirmDelete = confirm('Are you sure you want to delete this video?');
-      
-      if (confirmDelete) {
-        try {
-          const response = await fetch(`/dashboard/delete/${videoId}`, {
-            method: 'DELETE',
-          });
-
-          if (response.ok) {
-            alert('Video deleted successfully');
-            event.target.closest('tr').remove();
-          } else {
-            alert('Error deleting video');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('Error deleting video');
+                    if (response.ok) {
+                        alert('Video deleted successfully');
+                    } else {
+                        alert('Error deleting video');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error deleting video');
+                }
+            }
         }
-      }
-    }
-  });
 
-  document.getElementById('deleteByIdForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
-    const videoId = document.getElementById('videoId').value;
-    const confirmDelete = confirm('Are you sure you want to delete the video with ID ' + videoId + '?');
-    
-    if (confirmDelete) {
-      try {
-        const response = await fetch(`/dashboard/delete/${videoId}`, {
-          method: 'DELETE',
+        document.addEventListener('click', async function(event) {
+            if (event.target.classList.contains('delete-video')) {
+                const videoId = event.target.getAttribute('data-video-id');
+                const confirmDelete = confirm('Are you sure you want to delete this video?');
+
+                if (confirmDelete) {
+                    try {
+                        const response = await fetch(`/dashboard/delete/${videoId}`, {
+                            method: 'DELETE',
+                        });
+
+                        if (response.ok) {
+                            alert('Video deleted successfully');
+                            event.target.closest('tr').remove();
+                        } else {
+                            alert('Error deleting video');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error deleting video');
+                    }
+                }
+            }
         });
 
-        if (response.ok) {
-          alert('Video deleted successfully');
-        } else {
-          alert('Error deleting video');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error deleting video');
-      }
-    }
-  });
-</script>
+        async function handleAction(videoId, action) {
+            if (action === 'verify') {
+                const response = await fetch(`/dashboard/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        videoId
+                    })
+                });
 
-<%- include('partials/footer') %>
+                if (response.ok) {
+                    alert('Video verified successfully!');
+                    
+                } else {
+                    const errorText = await response.text();
+                    alert(`Error verifying video: ${errorText}`);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,48 +1,49 @@
-<%- include('partials/header', { title: "Video", video: video }) %>
+<html>
+<head>
+  <%- include('partials/head', { title: "Video" }); %>
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+</head>
+<body>
+    <%- include('partials/header', { user: user }); %>
 
-<div class="container">
-    <video id="player" class="responsive-video" controls>
-        <source src="<%= video.video %>" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
-    <div class="card mt-5">
-        <div class="card-body">
-            <h2 class="card-title"><%= video.title %></h2>
-            <p class="card-text"><%= video.description %></p>
-            <% const timestamp = video.uploadedAt; %>
-            <% const date = new Date(timestamp); %>
-            <% const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' }; %>
-            <% const formattedDate = date.toLocaleDateString('en-US', options); %>
-            <p><%= formattedDate %></p>
-            <hr>
-            <div class="media mt-4">
-                <p class="card-text">Uploader:</p>
-                <div class="media-body">
-                    <img src="https://cdn.discordapp.com/avatars/<%= video.uploader.userId %>/<%= video.uploader.avatar %>.png?size=4096" class="mr-3 rounded-circle" alt="Creator's avatar" style="width: 64px; height: 64px;">
-                    <p class="mt-0"><%= video.uploader.global_name %></p>
-                </div>
-            </div>
+    <main class="video-container">
+      <div class="video-player">
+        <video id="player" playsinline controls>
+          <source src="<%= video.video %>" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+  
+      <div class="video-info-container">
+        <h1 class="video-title"><%= video.title %></h1>
+  
+        <div class="creator-info">
+          <div class="creator-avatar">
+            <img src="https://cdn.discordapp.com/avatars/<%= video.uploader.userId %>/<%= video.uploader.avatar %>.png?size=4096" class="mr-3 rounded-circle" alt="Creator's avatar" style="width: 64px; height: 64px;">
+          </div>
+          <div class="creator-details">
+            <div class="creator-name"><%= video.uploader.global_name %></div>
+          </div>
         </div>
-    </div>
-</div>
-
-<%- include('partials/footer') %>
-
-<style>
-    .rounded-video {
-        border-radius: 15px;
-    }
-
-    .responsive-video {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-    }
-
-    @media (max-width: 768px) {
-        .container {
-            padding: 0;
-        }
-    }
-</style>
+  
+        <div class="video-description"><%= video.description %></div>
+      </div>
+    </main>
+  
+    <script>
+      const player = new Plyr('#player', {
+        controls: [
+          'play-large',
+          'play',
+          'progress',
+          'current-time',
+          'mute',
+          'volume',
+          'fullscreen'
+        ],
+        settings: ['quality', 'speed']
+      });
+    </script>
+</body>
+</html>

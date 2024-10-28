@@ -16,8 +16,6 @@ module.exports = (app, express) => {
                 videos.push(video);
             }
 
-            console.log(videos);
-
             res.render('index', { videos: videos, user: req.user });
         } catch (error) {
             console.error('Error fetching videos:', error);
@@ -26,7 +24,7 @@ module.exports = (app, express) => {
     });
 
     app.get('/login', (req, res) => {
-        res.render('login', { user: req.user });
+        res.redirect("/auth/discord")
     });
 
     app.get('/video/:id', async (req, res) => {
