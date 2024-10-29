@@ -128,5 +128,10 @@ module.exports = (app) => {
                 console.error('Cleanup error:', cleanupError);
             }
         }
+    }, (error, req, res, next) => {
+      if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).send('File size should not exceed 80MB.');
+      }
+      next(error);
     });
 };
