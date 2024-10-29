@@ -35,7 +35,8 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ 
     storage: storage,
-    fileFilter: fileFilter
+    fileFilter: fileFilter,
+    limits: { fileSize: 80 * 1024 * 1024 } // 80 MB
 });
 
 // Helper function to upload file to S3
